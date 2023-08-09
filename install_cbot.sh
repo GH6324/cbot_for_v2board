@@ -99,9 +99,9 @@ install_python() {
 install_cbot(){
     if [[ x"${release}" == x"debian" || x"${release}" == x"ubuntu" ]]; then
         apt update && apt install python3-pip -y
-        pip3 install python-telegram-bot --upgrade --break-system-packages
+        pip3 install --break-system-packages -r requirements.txt
     else
-        pip3 install python-telegram-bot --upgrade
+        pip3 install -r requirements.txt
     fi
 
     cd /usr/local/

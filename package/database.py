@@ -1,4 +1,4 @@
-import os, logging, pymysql, configparser, datetime, time
+import os, logging, pymysql, configparser
 from dbutils.pooled_db import PooledDB
 from pymysql.cursors import DictCursor
 logger = logging.getLogger(__name__)
