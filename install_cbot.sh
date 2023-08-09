@@ -43,7 +43,8 @@ install_base() {
         yum install wget curl tar crontabs sort gcc zlib-devel libffi-devel openssl-devel bzip2-devel  -y
     else
         apt update -y
-        apt install wget curl tar cron git build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libbz2-dev libffi-dev liblzma-dev libgmp-dev libgomp1 libgomp-plugin-extras libedit-dev liblzma-dev libtinfo-dev libsqlite3-dev -y
+        apt install libgomp-plugin-extras -y
+        apt install wget curl tar cron git build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libbz2-dev libffi-dev liblzma-dev libgmp-dev libgomp1 libedit-dev liblzma-dev libtinfo-dev libsqlite3-dev -y
     fi
 }
 
@@ -93,8 +94,11 @@ install_python() {
 
 
 install_cbot(){
-    if [[ x"${release}" == x"ubuntu" ]]; then
+    if [[ x"${release}" == x"ubuntu" || x"${release}" == x"debian" ]]; then
         apt update && apt install python3-pip -y
+    fi
+    
+    if [[ x"${release}" == x"ubuntu" ]]; then
         pip3 install --break-system-packages -r requirements.txt
     else
         pip3 install -r requirements.txt
