@@ -1,4 +1,4 @@
-python-telegram-bot
+bcrypt
 pymysql
 DBUtils
-bcrypt
+python-telegram-bot[job-queue]

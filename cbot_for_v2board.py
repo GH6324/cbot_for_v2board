@@ -21,7 +21,7 @@ CONF = configparser.ConfigParser()
 CONF.read(MODULE_REAL_DIR + '/conf/config.conf')
 TOKEN = CONF.get('Telegram', FILENAME)
 logging.basicConfig(
-    #filename=MODULE_REAL_DIR + '/log/' + FILENAME + '.log',
+    filename=MODULE_REAL_DIR + '/log/' + FILENAME + '.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
     level=logging.INFO
 )
