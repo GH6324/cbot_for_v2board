@@ -43,7 +43,7 @@ install_base() {
         yum install wget curl tar crontabs sort gcc zlib-devel libffi-devel openssl-devel bzip2-devel  -y
     else
         apt update -y
-        apt install wget curl tar cron git -y
+        apt install wget curl tar cron git build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libbz2-dev libffi-dev liblzma-dev libgmp-dev libgomp1 libgomp-plugin-extras libedit-dev liblzma-dev libtinfo-dev libsqlite3-dev -y
     fi
 }
 
@@ -64,40 +64,36 @@ install_python() {
         echo "Python版本满足要求..."
     else
         echo -e "python版本不满足要求,开始安装python..."
-        if [[ x"${release}" == x"centos" ]]; then
-            # 下载并安装Python
-            temp_dir=$(mktemp -d)
-            cd "$temp_dir"
-            wget https://www.python.org/ftp/python/$download_version/Python-$download_version.tgz
-            tar -xf Python-$download_version.tgz
-            make clean
-            cd Python-$download_version
-            ./configure --enable-optimizations
-            make -j$(nproc)
-            make altinstall
+        # 下载并安装Python
+        temp_dir=$(mktemp -d)
+        cd "$temp_dir"
+        wget https://www.python.org/ftp/python/$download_version/Python-$download_version.tgz
+        tar -xf Python-$download_version.tgz
+        make clean
+        cd Python-$download_version
+        ./configure --enable-optimizations
+        make -j$(nproc)
+        make altinstall
 
-            # 清理临时文件
-            cd ~
-            rm -rf "$temp_dir"
+        # 清理临时文件
+        cd ~
+        rm -rf "$temp_dir"
 
-            # 创建新的pip3和python3软链接
-            unlink /usr/bin/pip3 > /dev/null 2>&1
-            ln -s /usr/local/bin/pip$extracted_version /usr/bin/pip3
-            unlink /usr/bin/python3 > /dev/null 2>&1
-            ln -s /usr/local/bin/python$extracted_version /usr/bin/python3
-            
-            python3 -V
-            pip3 -V
-            echo -e "python${extracted_version} 安装成功"
-        else
-            apt update && apt install python3 python3-pip -y
-        fi
+        # 创建新的pip3和python3软链接
+        unlink /usr/bin/pip3 > /dev/null 2>&1
+        ln -s /usr/local/bin/pip$extracted_version /usr/bin/pip3
+        unlink /usr/bin/python3 > /dev/null 2>&1
+        ln -s /usr/local/bin/python$extracted_version /usr/bin/python3
+        
+        python3 -V
+        pip3 -V
+        echo -e "python${extracted_version} 安装成功"
     fi
 }
 
 
 install_cbot(){
-    if [[ x"${release}" == x"debian" || x"${release}" == x"ubuntu" ]]; then
+    if [[ x"${release}" == x"ubuntu" ]]; then
         apt update && apt install python3-pip -y
         pip3 install --break-system-packages -r requirements.txt
     else
