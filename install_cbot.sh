@@ -40,11 +40,14 @@ install_base() {
     if [[ x"${release}" == x"centos" ]]; then
         yum update -y
         yum install epel-release -y
-        yum install wget curl tar crontabs sort gcc zlib-devel libffi-devel openssl-devel bzip2-devel  -y
+        yum install wget curl tar crontabs git sort gcc zlib-devel libffi-devel openssl-devel bzip2-devel -y
     else
         apt update -y
+        apt install wget curl tar cron git -y
+        apt install build-essential xz-utils tk-dev libgomp1 llvm -y
+        apt install zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libsqlite3-dev libncursesw5-dev -y
+        apt install libxml2-dev libxmlsec1-dev libbz2-dev libffi-dev liblzma-dev libgmp-dev libedit-dev libtinfo-dev -y
         apt install libgomp-plugin-extras -y
-        apt install wget curl tar cron git build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libbz2-dev libffi-dev liblzma-dev libgmp-dev libgomp1 libedit-dev liblzma-dev libtinfo-dev libsqlite3-dev -y
     fi
 }
 
@@ -95,20 +98,20 @@ install_python() {
 
 install_cbot(){
     if [[ x"${release}" == x"ubuntu" || x"${release}" == x"debian" ]]; then
-        apt update && apt install python3-pip -y
+        apt install python3-pip -y
     fi
     
+    cd /usr/local/
+    git clone https://github.com/caoyyds/cbot_for_v2board.git
+    cd cbot_for_v2board
+
     if [[ x"${release}" == x"ubuntu" ]]; then
         pip3 install --break-system-packages -r requirements.txt
     else
         pip3 install -r requirements.txt
     fi
 
-    cd /usr/local/
-    git clone https://github.com/caoyyds/cbot_for_v2board.git
-    cd cbot_for_v2board
     cp cbot_for_v2board.service /etc/systemd/system/
-
     systemctl daemon-reload
     systemctl enable cbot_for_v2board.service
 
