@@ -97,3 +97,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
 
 [小C-机器人交流群](https://t.me/cao_bot_group)
 [小C-机器人更新公告](https://t.me/cao_bot_channel)
+
+## 鸣谢
+
+- 基于Python的Telegram机器人框架[python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)

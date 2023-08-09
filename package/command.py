@@ -300,3 +300,16 @@ async def login(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(f'⚠️未查询到此邮箱注册\n请进入官网注册后再试\n官网地址{AIRPORT_URL}')
 
+
+async def other_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    '''其他命令'''
+    if not update.message:
+        return
+    
+    if update.message.chat.type == 'supergroup':
+        try:
+            await update.message.delete()
+        except error.BadRequest:
+            pass
+        return
+

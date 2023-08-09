@@ -2,10 +2,10 @@
 # pylint: disable=C0116,W0613
 # -*- coding: utf-8 -*-
 
-import logging, configparser, os
+import logging, configparser, os, re
 from datetime import datetime, timedelta
 from package import check_in, command
-from package.game import slot_machine, lottery_record
+from package.game import slot_machine, lottery_record, red_packets
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -69,7 +69,14 @@ def main():
     application.add_handler(CommandHandler('day', check_in.day))
     application.add_handler(CommandHandler('lottery_record', lottery_record.lottery_record))
     application.add_handler(CommandHandler('change_password', command.change_password))
+    application.add_handler(CommandHandler('money_pack', red_packets.money_pack))
+    application.add_handler(CommandHandler('flow_pack', red_packets.flow_pack))
+    # 群组中的其他命令删除
+    application.add_handler(MessageHandler(filters.COMMAND, command.other_command))
     
+    #签到回复
+    application.add_handler(MessageHandler(filters.Regex(re.compile(r'签到', re.IGNORECASE)), check_in.day))
+
     #下注按钮
     application.add_handler(CallbackQueryHandler(slot_machine.bet_up,pattern='^BET_UP:'))
     application.add_handler(CallbackQueryHandler(slot_machine.bet_ok,pattern='^BET_OK:'))
@@ -82,6 +89,10 @@ def main():
 
     #开奖记录按钮
     application.add_handler(CallbackQueryHandler(lottery_record.lottery_record_page,pattern='^LOTTERY_RECORD:'))
+
+    #红包按钮
+    application.add_handler(CallbackQueryHandler(red_packets.grab_flow,pattern='^GRAB_FLOW:'))
+    application.add_handler(CallbackQueryHandler(red_packets.grab_money,pattern='^GRAB_MONEY:'))
 
     #过滤转发签到表情,防止刷签到
     application.add_handler(MessageHandler(filters.FORWARDED & filters.Dice.DICE, check_in.forwarded_dice))

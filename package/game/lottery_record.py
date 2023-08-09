@@ -4,6 +4,7 @@
 
 from telegram.ext import ContextTypes
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from package.job import message_auto_del
 
 
 async def lottery_record(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -24,9 +25,10 @@ async def lottery_record(update: Update, context: ContextTypes.DEFAULT_TYPE):
     txt = '\n'.join(current_page)
 
     if num_pages == 1:
-        await update.message.reply_text(
-            text=f'{txt}\n\n'
-            f'当前第{page}页/共{num_pages}页'
+        bot_return = await update.message.reply_text(
+            text=f'{txt}\n'
+            f'当前第{page}页/共{num_pages}页',
+            parse_mode='HTML'
         )
     else:
         keyboard = [
@@ -35,11 +37,16 @@ async def lottery_record(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text(
-            text=f'{txt}\n\n'
+        bot_return = await update.message.reply_text(
+            text=f'{txt}\n'
             f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='HTML'
         )
+
+    if update.message.chat.type == 'supergroup':
+        context.job_queue.run_once(message_auto_del, 180, data=update.message.chat_id, name=str(update.message.message_id))
+        context.job_queue.run_once(message_auto_del, 180, data=bot_return.chat_id, name=str(bot_return.message_id))
 
         
 async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -66,9 +73,10 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.callback_query.edit_message_text(
-            text=f'{txt}\n\n'
+            text=f'{txt}\n'
             f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup
+            reply_markup=reply_markup, 
+            parse_mode='HTML'
         )
     elif page == num_pages:
         keyboard = [
@@ -78,9 +86,10 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.callback_query.edit_message_text(
-            text=f'{txt}\n\n'
+            text=f'{txt}\n'
             f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='HTML'
         )
     else:
         keyboard = [
@@ -91,9 +100,11 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.callback_query.edit_message_text(
-            text=f'{txt}\n\n'
+            text=f'{txt}\n'
             f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='HTML'
         )
 
-
+    await update.callback_query.answer(text='')
+    

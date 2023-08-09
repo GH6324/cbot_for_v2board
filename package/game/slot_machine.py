@@ -198,21 +198,15 @@ async def bet_end(context: ContextTypes.DEFAULT_TYPE):
         context.job_queue.run_once(message_auto_del, SLOT_MACHINE_END_TIME, data=message_return.chat_id, name=str(message_return.message_id))
 
     bet_result_data = f'第<code>{date}</code>期：开奖结果{lottery_result}\n'
-    context.job_queue.run_once(bet_result, SLOT_MACHINE_END_TIME, name='bet_result', data=bet_result_data)
+    if 'bet_result' in context.bot_data:
+        context.bot_data['bet_result'] += bet_result_data
+    else:
+        context.bot_data['bet_result'] = bet_result_data
 
     del context.bot_data['bet_message_id']
     del context.bot_data['bet_message']
     del context.bot_data['bet_period']
     del context.bot_data[date]
-
-
-async def bet_result(context: ContextTypes.DEFAULT_TYPE):
-    '''统计开奖记录'''
-    if 'bet_result' in context.bot_data:
-        context.bot_data['bet_result'] += context.job.data
-    else:
-        context.bot_data['bet_result'] = ''
-        context.bot_data['bet_result'] += context.job.data
 
 
 async def bet_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -400,6 +394,10 @@ async def bet_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def bet_up(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''更新开奖时间'''
     current_jobs = context.job_queue.get_jobs_by_name('bet_end')
+    if len(current_jobs) == 0:
+        await update.callback_query.answer(text='当期已开奖...', show_alert=True)
+        await update.callback_query.message.delete()
+        return
     limit_time = (current_jobs[0].job.next_run_time - datetime.now(timezone.utc)).seconds
     date = context.bot_data['bet_period']
 
