@@ -125,7 +125,7 @@ async def flow_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # 监测命令格式
     if len(context.args) != 2:
-        bot_return = await update.message.reply_text("请输入有效的流量总量和领取人数\n(以空格分隔)(单位:GB)\n例如: /flow_packets 200 5")
+        bot_return = await update.message.reply_text("请输入有效的流量总量和领取人数\n(以空格分隔)(单位:GB)\n例如: /flow_pack 200 5")
         context.job_queue.run_once(message_auto_del, 30, data=update.message.chat_id, name=str(update.message.message_id))
         context.job_queue.run_once(message_auto_del, 30, data=bot_return.chat_id, name=str(bot_return.message_id))
         return
@@ -168,7 +168,7 @@ async def flow_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     flow_packets_list = distribute_points(total_flow, total_people)
     if not flow_packets_list:
-        bot_return = await update.message.reply_text("无法进行红包分配\n请输入有效的流量总量和领取人数\n(以空格分隔)(单位:元)\n例如: /money_packets 200 5")
+        bot_return = await update.message.reply_text("无法进行红包分配\n请输入有效的流量总量和领取人数\n(以空格分隔)(单位:元)\n例如: /flow_pack 200 5")
         context.job_queue.run_once(message_auto_del, 30, data=update.message.chat_id, name=str(update.message.message_id))
         context.job_queue.run_once(message_auto_del, 30, data=bot_return.chat_id, name=str(bot_return.message_id))
         return
@@ -298,7 +298,7 @@ async def money_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 监测命令格式
     if len(context.args) != 2:
-        bot_return = await update.message.reply_text("请输入有效的余额包总额和领取人数\n(以空格分隔)(单位:元)\n例如: /money_packets 200 5")
+        bot_return = await update.message.reply_text("请输入有效的余额包总额和领取人数\n(以空格分隔)(单位:元)\n例如: /money_pack 200 5")
         context.job_queue.run_once(message_auto_del, 30, data=update.message.chat_id, name=str(update.message.message_id))
         context.job_queue.run_once(message_auto_del, 30, data=bot_return.chat_id, name=str(bot_return.message_id))
         return
@@ -339,7 +339,7 @@ async def money_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     red_packets = distribute_points(total_amount, total_people)
     if not red_packets:
-        bot_return = await update.message.reply_text("无法进行红包分配\n请输入有效的余额包总额和领取人数\n(以空格分隔)(单位:元)\n例如: /money_packets 200 5")
+        bot_return = await update.message.reply_text("无法进行红包分配\n请输入有效的余额包总额和领取人数\n(以空格分隔)(单位:元)\n例如: /money_pack 200 5")
         context.job_queue.run_once(message_auto_del, 30, data=update.message.chat_id, name=str(update.message.message_id))
         context.job_queue.run_once(message_auto_del, 30, data=bot_return.chat_id, name=str(bot_return.message_id))
         return
