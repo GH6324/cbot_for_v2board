@@ -89,6 +89,24 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
     systemctl restart cbot_for_v2board.service
     ```
 
+- 添加命令
+
+  为方便用户使用机器人，可以将下方命令列表添加至机器人。使用[@BotFather](https://t.me/BotFather)发送`/setcommands`命令，选择机器人后粘贴下方内容即可
+
+  ```bash
+  help - 帮助  
+  day - 每日签到得余额  
+  money_pack - 发拼手气余额红包  
+  flow_pack - 发拼手气流量红包  
+  lottery_record - 当日开奖记录  
+  bind - 绑定账号  
+  unbind - 解除绑定  
+  login - 登录绑定账号  
+  logout - 退出绑定账号  
+  me - 个人信息  
+  change_password - 更改密码  
+  ```
+
 ## 演示群组
 
 [小C-Airport](https://t.me/cao_airport_group)
