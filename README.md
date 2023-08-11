@@ -1,7 +1,7 @@
 # Cbot
 
 小C-TelegramBot  
-为v2board开发的群组小游戏及实用功能机器人
+为[v2board](https://github.com/v2board/v2board)开发的群组小游戏及实用功能机器人
 
 ## 介绍
 
@@ -107,13 +107,26 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
   change_password - 更改密码  
   ```
 
+- 故障排查
+
+  - 安装问题
+
+    根据安装时的错误提示进行排查，为了避免破坏原有环境，可将数据库开启远程访问，另外开一台vps部署，测试好没问题后再部署到原有环境
+
+  - 运行问题
+
+    如有运行机器人后没有反应，可以使用`journalctl -u cbot_for_v2board.service`查看日志，根据日志进行排查  
+
+    机器人正常运行后会将日志输出至`/var/log/cbot_for_v2board.log`文件
+
 ## 演示群组
 
-[小C-Airport](https://t.me/cao_airport_group)
+[小C-Airport](https://t.me/cao_airport_group)  
+[小C-Airport-Bot](https://t.me/cao_airport_bot)
 
 ## 问题反馈&更新公告
 
-[小C-机器人交流群](https://t.me/cao_bot_group)
+[小C-机器人交流群](https://t.me/cao_bot_group)  
 [小C-机器人更新公告](https://t.me/cao_bot_channel)
 
 ## 鸣谢
