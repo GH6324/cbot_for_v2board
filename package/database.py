@@ -11,6 +11,7 @@ class V2Database:
         config.read(MODULE_REAL_DIR + '/../conf/config.conf')   # 读取配置文件
 
         host = config.get('Database', 'host')
+        port = config.get('Database', 'port')
         user = config.get('Database', 'user')
         pwd = config.get('Database', 'pwd')
         db = config.get('Database', 'db')
@@ -33,7 +34,7 @@ class V2Database:
             # 4 = 执行查询时，
             # 7 = 总是
             host=host,
-            port=3306,
+            port=port,
             user=user,
             password=pwd,
             database=db,

@@ -40,6 +40,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
 
   >[Database]  
   >host = 127.0.0.1  
+  >post = 3306
   >user = user  
   >pwd = pwd  
   >db = dbname  
