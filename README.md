@@ -117,7 +117,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
 
     如有运行机器人后没有反应，可以使用`journalctl -u cbot_for_v2board.service`查看日志，根据日志进行排查  
 
-    机器人正常运行后会将日志输出至`/var/log/cbot_for_v2board.log`文件
+    机器人正常运行后会将日志输出至`/usr/local/cbot_for_v2board/log/cbot_for_v2board.log`文件
 
 ## 演示群组
 
