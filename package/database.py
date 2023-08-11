@@ -34,7 +34,7 @@ class V2Database:
             # 4 = 执行查询时，
             # 7 = 总是
             host=host,
-            port=port,
+            port=int(port),
             user=user,
             password=pwd,
             database=db,
