@@ -119,7 +119,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
 
     机器人正常运行后会将日志输出至`/usr/local/cbot_for_v2board/log/cbot_for_v2board.log`文件
 
-## 演示群组
+## 演示群组&Bot
 
 [小C-Airport](https://t.me/cao_airport_group)  
 [小C-Airport-Bot](https://t.me/cao_airport_bot)
