@@ -40,7 +40,8 @@ install_base() {
     if [[ x"${release}" == x"centos" ]]; then
         yum update -y
         yum install epel-release -y
-        yum install wget curl tar crontabs git sort gcc zlib-devel libffi-devel openssl-devel bzip2-devel -y
+        yum install wget curl tar crontabs git sort gcc make -y
+        yum install sqlite-devel tk-devel ncurses-devel zlib-devel libffi-devel openssl-devel bzip2-devel -y
     else
         apt update -y
         apt install wget curl tar cron git -y
@@ -105,11 +106,8 @@ install_cbot(){
     git clone https://github.com/caoyyds/cbot_for_v2board.git
     cd cbot_for_v2board
 
-    if [[ x"${release}" == x"ubuntu" ]]; then
-        pip3 install --break-system-packages -r requirements.txt
-    else
-        pip3 install -r requirements.txt
-    fi
+    pip3 install --break-system-packages -r requirements.txt
+    pip3 install -r requirements.txt
 
     cp cbot_for_v2board.service /etc/systemd/system/
     systemctl daemon-reload
