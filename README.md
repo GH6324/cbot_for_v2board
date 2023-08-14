@@ -20,7 +20,7 @@
 - 二进制可执行文件安装脚本（无需安装Python环境）（方便快捷，推荐使用）
 
   ```bash
-  bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot.sh)
+  bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot_app.sh)
   ```
 
 - 源码安装脚本（需要安装Python3.8+环境）
