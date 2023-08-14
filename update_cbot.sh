@@ -16,8 +16,8 @@ cd "$install_dir"
 
 # 检查是否使用git部署
 if [ ! -d ".git" ]; then
-  curl -O https://github.com/caoyyds/cbot_for_v2board/releases/download/2.1.0/cbot_for_v2board.tar.gz
-  tar -zxvf cbot_for_v2board.tar.gz
+  curl -LO https://github.com/caoyyds/cbot_for_v2board/releases/download/2.1.0/cbot_for_v2board.tar.gz
+  tar -zxvf --overwrite cbot_for_v2board.tar.gz
   rm -rf cbot_for_v2board.tar.gz
   chmod +x cbot_for_v2board
 
