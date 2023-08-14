@@ -17,15 +17,16 @@
   
 ## 安装
 
-> 依赖关系:  
-> Bot运行需要python3.8及以上版本  
-> 安装脚本会尝试安装python3.8及以上版本  
-> 如果安装失败请自行安装python3.8及以上版本  
-
-- 安装脚本
+- 二进制可执行文件安装脚本（无需安装Python环境）（方便快捷，推荐使用）
 
   ```bash
   bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot.sh)
+  ```
+
+- 源码安装脚本（需要安装Python3.8+环境）
+
+  ```bash
+  bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot_code.sh)
   ```
 
 ## 更新
@@ -36,59 +37,26 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
 
 ## 使用
 
-- 配置文件
+⚠️注意:在运行机器人之前请先将机器人加入群组并设置为管理员，并配置好配置文件，否则机器人无法正常工作。  
+修改任何配置后需要重启机器人才能生效。
 
-  >[Database]  
-  >host = 127.0.0.1  
-  >post = 3306  
-  >user = user  
-  >pwd = pwd  
-  >db = dbname  
-  >  
-  >[Telegram]  
-  >cbot_for_v2board = token  
-  >group_username = @group_username  
-  >group_url = group_url  
-  >  
-  >[V2board]  
-  >name = v2board_name  
-  >url = v2board_url  
+- 开启机器人
 
-  - Database项  
-    数据库配置，填写v2board数据库信息
+  ```bash
+  systemctl start cbot_for_v2board.service
+  ```
 
-  - Telegram项  
-    机器人token可以通过官方机器人生成[@BotFather](https://t.me/BotFather)发送`/newbot`命令按照提示操作  
-    group_username为群组用户么必须带有@  
-    ⚠️注意:群组必须为公开群组  
-    group_url为群组url请将链接填写完整
+- 关闭机器人
 
-  - V2board项
-    v2board_name为机场名称  
-    v2board_url为机场官网地址
+  ```bash
+  systemctl stop cbot_for_v2board.service
+  ```
 
-- 运行
+- 重启机器人
 
-  ⚠️注意:在运行机器人之前请先将机器人加入群组并设置为管理员，并配置好配置文件（所有配置项均要填写完整），否则机器人无法正常工作。  
-  修改任何配置后需要重启机器人才能生效。
-
-  - 开启机器人
-
-    ```bash
-    systemctl start cbot_for_v2board.service
-    ```
-
-  - 关闭机器人
-
-    ```bash
-    systemctl stop cbot_for_v2board.service
-    ```
-
-  - 重启机器人
-
-    ```bash
-    systemctl restart cbot_for_v2board.service
-    ```
+  ```bash
+  systemctl restart cbot_for_v2board.service
+  ```
 
 - 添加命令
 
@@ -108,17 +76,9 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
   change_password - 更改密码  
   ```
 
-- 故障排查
+- 故障排查&日志
 
-  - 安装问题
-
-    根据安装时的错误提示进行排查，为了避免破坏原有环境，可将数据库开启远程访问，另外开一台vps部署，测试好没问题后再部署到原有环境
-
-  - 运行问题
-
-    如有运行机器人后没有反应，可以使用`journalctl -u cbot_for_v2board.service`查看日志，根据日志进行排查  
-
-    机器人正常运行后会将日志输出至`/usr/local/cbot_for_v2board/log/cbot_for_v2board.log`文件
+  如有运行机器人后没有反应，可以使用`journalctl -u cbot_for_v2board.service`查看日志，根据日志进行排查  
 
 ## 演示群组&Bot
 

@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# 检查是否使用root用户运行脚本
-if [[ $EUID -ne 0 ]]; then
-  echo -e "必须使用root用户运行此脚本..."
-  exit 1
-fi
-
+# 检测root权限
+[[ $EUID -ne 0 ]] && echo -e "必须使用root用户运行此脚本..." && exit 1
 echo -e "root权限检测通过..."
 
 # 检查是否安装了cbot_for_v2board
@@ -20,14 +16,19 @@ cd "$install_dir"
 
 # 检查是否使用git部署
 if [ ! -d ".git" ]; then
-  echo "必须使用git部署才能使用此脚本更新..."
-  exit 1
-fi
+  curl -# -O 
+  tar -zxvf cbot_for_v2board.tar.gz
+  rm -rf cbot_for_v2board.tar.gz
+  chmod +x cbot_for_v2board
 
-# 检查是否安装了git
-if ! command -v git &> /dev/null; then
-    echo "没有检查到git命令 请先安装git"
-    exit 1
+  echo "cbot_for_v2board更新成功..."
+  echo "-----------------------------------------------------"
+  echo "请确认配置文件是否要更改..."
+  echo "vi /usr/local/cbot_for_v2board/config.conf"
+  echo "完成后重启cbot_for_v2board即可..."
+  echo "systemctl restart cbot_for_v2board"
+  echo "-----------------------------------------------------"
+  exit 1
 fi
 
 # 更新cbot_for_v2board
@@ -35,8 +36,10 @@ echo "正在更新cbot_for_v2board..."
 git config --global --add safe.directory "$(pwd)"
 git fetch --all && git reset --hard origin/main && git pull origin main
 
-# 重启cbot_for_v2board
-echo "正在重启cbot_for_v2board..."
-systemctl restart cbot_for_v2board.service
-
 echo "cbot_for_v2board更新成功..."
+echo "-----------------------------------------------------"
+echo "请确认配置文件是否要更改..."
+echo "vi /usr/local/cbot_for_v2board/package/conf/config.conf"
+echo "完成后重启cbot_for_v2board即可..."
+echo "systemctl restart cbot_for_v2board"
+echo "-----------------------------------------------------"

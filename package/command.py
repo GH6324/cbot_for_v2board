@@ -2,19 +2,12 @@
 # pylint: disable=C0116,W0613
 # -*- coding: utf-8 -*-
 
-import time, bcrypt, os, sys, configparser
+import time, bcrypt
 from package.job import message_auto_del
 from package.database import V2_DB
 from telegram.ext import ContextTypes
 from telegram import Update, error, InlineKeyboardButton, InlineKeyboardMarkup
-
-
-MAIN_FILE_DIR = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__))
-CONF = configparser.ConfigParser()
-CONF.read(MAIN_FILE_DIR + '/conf/config.conf')
-AIRPORT_URL = CONF.get('V2board','url')
-GROUP_URL = CONF.get('Telegram','group_url')
-NAME = CONF.get('V2board','name')
+from package.conf.config import V2BOARD_URL, GROUP_URL, V2BOARD_NAME
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -32,14 +25,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         keyboard = [
             [
-                InlineKeyboardButton("🌍官方网站", url=AIRPORT_URL),
+                InlineKeyboardButton("🌍官方网站", url=V2BOARD_URL),
                 InlineKeyboardButton("👥官方群组", url=GROUP_URL),
+            ],
+            [
+                InlineKeyboardButton("Github开源地址", url='https://github.com/caoyyds/cbot_for_v2board'),
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
-            text=f'Hi\n欢迎使用{NAME}机场bot\n\n'\
-                f'如果您没有注册过{NAME}请点击下方按钮进入官方网站注册\n\n'\
+            text=f'Hi\n欢迎使用{V2BOARD_NAME}机场bot\n\n'\
+                f'如果您没有注册过{V2BOARD_NAME}请点击下方按钮进入官方网站注册\n\n'\
                 '如果您已注册,请使用 /bind 命令绑定账号后使用此Bot',
             reply_markup=reply_markup,
         )
@@ -94,18 +90,18 @@ async def bind(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not context.args:
         await update.message.reply_text(
-            text=f'如需将{NAME}绑定Telegram请使用此命令+订阅地址进行绑定\n\n'\
-                f'例如:\n/bind {AIRPORT_URL}/api/v1/client/subscribe?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n'\
-                f'订阅地址请在{NAME}官网 {AIRPORT_URL} 仪表盘 -> 一键订阅 -> 复制订阅地址 获取',
+            text=f'如需将{V2BOARD_NAME}绑定Telegram请使用此命令+订阅地址进行绑定\n\n'\
+                f'例如:\n/bind {V2BOARD_URL}/api/v1/client/subscribe?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n'\
+                f'订阅地址请在{V2BOARD_NAME}官网 {V2BOARD_URL} 仪表盘 ➡️ 一键订阅 ➡️ 复制订阅地址 获取',
             )
         return    
             
     if len(context.args) != 1:
         await update.message.reply_text(
             text='❌命令格式错误\n'\
-                f'如需将{NAME}绑定Telegram请使用此命令+订阅地址进行绑定\n\n'\
-                f'例如:\n/bind {AIRPORT_URL}/api/v1/client/subscribe?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n'\
-                f'订阅地址请在{NAME}官网 {AIRPORT_URL} 仪表盘 -> 一键订阅 -> 复制订阅地址 获取',
+                f'如需将{V2BOARD_NAME}绑定Telegram请使用此命令+订阅地址进行绑定\n\n'\
+                f'例如:\n/bind {V2BOARD_URL}/api/v1/client/subscribe?token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n'\
+                f'订阅地址请在{V2BOARD_NAME}官网 {V2BOARD_URL} 仪表盘 ➡️ 一键订阅 ➡️ 复制订阅地址 获取',
             )
         return 
         
@@ -144,7 +140,7 @@ async def unbind(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if db_status:
         await update.message.reply_text('✅退出登录/解除绑定成功')
     else:
-        await update.message.reply_text(f'您没有绑定过{NAME}\n无需解绑')
+        await update.message.reply_text(f'您没有绑定过{V2BOARD_NAME}\n无需解绑')
 
 
 async def me(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -245,7 +241,7 @@ async def change_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sql = "update v2_user set password=%s where telegram_id=%s"
         val = (hash, update.message.from_user.id, )
         V2_DB.update_one(sql, val)
-        await update.message.reply_text(f'✅更改密码成功\n请使用新密码登录官网\n官网地址{AIRPORT_URL}')
+        await update.message.reply_text(f'✅更改密码成功\n请使用新密码登录官网\n官网地址{V2BOARD_URL}')
     else:
         await update.message.reply_text('❌未查询到此Telegram账号绑定信息,请先使用 /bind 绑定后再试...')
            
@@ -298,7 +294,7 @@ async def login(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text(f'⚠️输入的邮箱密码不正确\n请确认后再试...')
     else:
-        await update.message.reply_text(f'⚠️未查询到此邮箱注册\n请进入官网注册后再试\n官网地址{AIRPORT_URL}')
+        await update.message.reply_text(f'⚠️未查询到此邮箱注册\n请进入官网注册后再试\n官网地址{V2BOARD_URL}')
 
 
 async def other_command(update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -2,10 +2,10 @@
 # pylint: disable=C0116,W0613
 # -*- coding: utf-8 -*-
 
-import time, uuid, os, sys, configparser
+import time, uuid
 from datetime import datetime, timezone
 from package.job import message_auto_del
-from package.database import V2_DB
+from package.database import V2_DB, update_flow
 from telegram.ext import ContextTypes
 from telegram import (
     Update, 
@@ -13,6 +13,7 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup
 )
+from package.conf.config import GROUP_URL, GROUP_USERNAME, SLOT_MACHINE_TIME, SLOT_MACHINE_HELP
 
 
 DATA_SLOT_MACHINE = {
@@ -47,19 +48,6 @@ G1 = [7,8,10,14,19,20,25,28,29,31,34,37,40,46,50,53,55,58]
 L1 = [7,10,12,15,19,25,28,31,34,36,37,40,45,46,51,55,57,58]
 Q1 = [8,12,14,15,20,28,29,31,36,40,45,46,50,51,53,55,57,58]
 
-MAIN_FILE_DIR = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__))
-CONF = configparser.ConfigParser()
-CONF.read(MAIN_FILE_DIR + '/conf/config.conf')
-NAME = CONF.get('V2board','name')
-AIRPORT_URL = CONF.get('V2board','url')
-GROUP_URL = CONF.get('Telegram','group_url')
-GROUP_USERNAME = CONF.get('Telegram','group_username')
-
-#老虎机整体循环秒数 不要改 不要改 不要改
-SLOT_MACHINE_TIME = 600
-#开奖前返时间 不要改 不要改 不要改
-SLOT_MACHINE_END_TIME = 60
-
 
 async def bet_start(context: ContextTypes.DEFAULT_TYPE):
     '''投注开始'''
@@ -70,7 +58,7 @@ async def bet_start(context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("🔄开奖时间",callback_data='BET_UP:'),
             ], 
             [
-                InlineKeyboardButton("📝玩法说明文档",url='https://telegra.ph/CAO-SLOT-MACHINE-03-31'),
+                InlineKeyboardButton("📝玩法说明文档",url=SLOT_MACHINE_HELP),
             ], 
         ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -82,7 +70,7 @@ async def bet_start(context: ContextTypes.DEFAULT_TYPE):
     context.bot_data['bet_period'] = date
 
     #添加开奖任务
-    context.job_queue.run_once(bet_end, SLOT_MACHINE_TIME-SLOT_MACHINE_END_TIME, name='bet_end')
+    context.job_queue.run_once(bet_end, SLOT_MACHINE_TIME-60, name='bet_end')
 
 
 async def bet_end(context: ContextTypes.DEFAULT_TYPE):
@@ -92,7 +80,7 @@ async def bet_end(context: ContextTypes.DEFAULT_TYPE):
     #发送老虎机获取开奖结果
     bot_return = await context.bot.send_dice(chat_id=GROUP_USERNAME,emoji='🎰')
     lottery_result = (DATA_SLOT_MACHINE[str(bot_return.dice.value)])
-    context.job_queue.run_once(message_auto_del, SLOT_MACHINE_END_TIME, data=bot_return.chat_id, name=str(bot_return.message_id))
+    context.job_queue.run_once(message_auto_del, 60, data=bot_return.chat_id, name=str(bot_return.message_id))
     
     #开奖结果头部信息
     date = context.bot_data['bet_period']
@@ -160,26 +148,8 @@ async def bet_end(context: ContextTypes.DEFAULT_TYPE):
                 #发送奖励信息
                 await context.bot.send_message(chat_id=int(user_id), text=first_text+end_text, parse_mode='HTML')
 
-                #查询用户信息
-                sql = "select * from v2_user where telegram_id=%s"
-                val = (int(user_id), )
-                myresult = V2_DB.select_one(sql, val)
                 #更新用户数据
-                u = myresult.get('u')-(int(user_bet_flow)*1073741824)
-                d = myresult.get('d')-(int(user_bet_flow)*1073741824)
-                transfer_enable = myresult.get('transfer_enable')+(int(user_bet_flow)*1073741824)
-                if u >= 0:
-                    sql = "update v2_user set u=%s where telegram_id=%s"
-                    val = (u, int(user_id))
-                    V2_DB.update_one(sql, val)
-                elif d >= 0:
-                    sql = "update v2_user set d=%s where telegram_id=%s"
-                    val = (d, int(user_id))
-                    V2_DB.update_one(sql, val)
-                else:
-                    sql = "update v2_user set transfer_enable=%s where telegram_id=%s"
-                    val = (transfer_enable, int(user_id))
-                    V2_DB.update_one(sql, val)
+                update_flow(user_bet_flow, user_id)
                 #统计获奖流量
                 if 'award_flow' in context.bot_data:
                     context.bot_data['award_flow'] += int(user_bet_flow)
@@ -195,13 +165,14 @@ async def bet_end(context: ContextTypes.DEFAULT_TYPE):
     #发送群组奖励信息
     message_return = await context.bot.send_message(chat_id=GROUP_USERNAME,text=first_text+group_text, parse_mode='HTML')
     if group_text == '本期无人中奖👻':
-        context.job_queue.run_once(message_auto_del, SLOT_MACHINE_END_TIME, data=message_return.chat_id, name=str(message_return.message_id))
+        context.job_queue.run_once(message_auto_del, 60, data=message_return.chat_id, name=str(message_return.message_id))
 
-    bet_result_data = f'第<code>{date}</code>期：开奖结果{lottery_result}\n'
+    bet_result_data = f'第<code>{date}</code>期：开奖结果{lottery_result}'
     if 'bet_result' in context.bot_data:
-        context.bot_data['bet_result'] += bet_result_data
+        context.bot_data['bet_result'].append(bet_result_data)
     else:
-        context.bot_data['bet_result'] = bet_result_data
+        context.bot_data['bet_result'] = [bet_result_data]
+
 
     del context.bot_data['bet_message_id']
     del context.bot_data['bet_message']
@@ -352,7 +323,7 @@ async def bet_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                 InlineKeyboardButton("🔄开奖时间",callback_data='BET_UP:'),
                             ], 
                             [
-                                InlineKeyboardButton("📝玩法说明文档",url='https://telegra.ph/CAO-SLOT-MACHINE-03-31'),
+                                InlineKeyboardButton("📝玩法说明文档",url=SLOT_MACHINE_HELP),
                             ], 
                         ]
                     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -419,7 +390,7 @@ async def bet_up(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("🔄开奖时间",callback_data='BET_UP:'),
             ], 
             [
-                InlineKeyboardButton("📝玩法说明文档",url='https://telegra.ph/CAO-SLOT-MACHINE-03-31'),
+                InlineKeyboardButton("📝玩法说明文档",url=SLOT_MACHINE_HELP),
             ], 
         ]
     reply_markup = InlineKeyboardMarkup(keyboard)

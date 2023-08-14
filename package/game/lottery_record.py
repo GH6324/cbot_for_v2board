@@ -12,21 +12,23 @@ async def lottery_record(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message:
         return
     
-    data = context.bot_data.get('bet_result', '暂无开奖记录\n').split('\n')
-    
+    data = context.bot_data.get('bet_result', ['暂无开奖记录'])
+    data_copy = data.copy()
+    data_copy.reverse()
+
     #当前页数
     page = 1
     #总页数
-    num_pages = (len(data) + 10 - 1) // 10
+    num_pages = (len(data_copy) + 10 - 1) // 10
     #分页数据
-    paginated_data = [data[i:i + 10] for i in range(0, len(data), 10)]
+    paginated_data = [data_copy[i:i + 10] for i in range(0, len(data_copy), 10)]
     #当前页数据
     current_page = paginated_data[page - 1]
     txt = '\n'.join(current_page)
 
     if num_pages == 1:
         bot_return = await update.message.reply_text(
-            text=f'{txt}\n'
+            text=f'{txt}\n\n'
             f'当前第{page}页/共{num_pages}页',
             parse_mode='HTML'
         )
@@ -55,12 +57,18 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
     
     page = int(update.callback_query.data.split(':')[1].split(',')[0])
-    data = context.bot_data.get('bet_result', '暂无开奖记录\n').split('\n')
+    data = context.bot_data.get('bet_result')
+
+    if len(data) > 100:
+        context.bot_data['bet_result'].pop(0)
+
+    data_copy = data.copy()
+    data_copy.reverse()
 
     #总页数
-    num_pages = (len(data) + 10 - 1) // 10
+    num_pages = (len(data_copy) + 10 - 1) // 10
     #分页数据
-    paginated_data = [data[i:i + 10] for i in range(0, len(data), 10)]
+    paginated_data = [data_copy[i:i + 10] for i in range(0, len(data_copy), 10)]
     #当前页数据
     current_page = paginated_data[page - 1]
     txt = '\n'.join(current_page)
@@ -72,12 +80,6 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.callback_query.edit_message_text(
-            text=f'{txt}\n'
-            f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup, 
-            parse_mode='HTML'
-        )
     elif page == num_pages:
         keyboard = [
             [
@@ -85,12 +87,6 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.callback_query.edit_message_text(
-            text=f'{txt}\n'
-            f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup,
-            parse_mode='HTML'
-        )
     else:
         keyboard = [
             [
@@ -99,12 +95,13 @@ async def lottery_record_page(update: Update, context: ContextTypes.DEFAULT_TYPE
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.callback_query.edit_message_text(
-            text=f'{txt}\n'
-            f'当前第{page}页/共{num_pages}页',
-            reply_markup=reply_markup,
-            parse_mode='HTML'
-        )
+    
+    await update.callback_query.edit_message_text(
+        text=f'{txt}\n\n'
+        f'当前第{page}页/共{num_pages}页',
+        reply_markup=reply_markup,
+        parse_mode='HTML'
+    )
 
     await update.callback_query.answer(text='')
     

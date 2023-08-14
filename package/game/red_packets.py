@@ -4,7 +4,7 @@
 
 import random, logging
 from package.job import message_auto_del
-from package.database import V2_DB
+from package.database import V2_DB, update_flow
 from telegram.ext import ContextTypes
 from telegram import (
     Update, 
@@ -63,9 +63,7 @@ async def del_flow_packets(context: ContextTypes.DEFAULT_TYPE):
     if flow_packets_dict:
         keys_without_value = sum([key for key, value in flow_packets_dict.items() if value == ''])
         # 更新用户流量
-        sql = "update v2_user set transfer_enable=transfer_enable+%s where telegram_id=%s"
-        val = (int(keys_without_value*1073741824), context.job.user_id)
-        V2_DB.update_one(sql, val)
+        update_flow(keys_without_value, context.job.user_id)
         # 发送通知
         await context.bot.send_message(
             chat_id=context.job.user_id, 
@@ -268,22 +266,7 @@ async def grab_flow(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.callback_query.edit_message_text(text=grab_flow_txt, reply_markup=reply_markup)
     
     # 更新用户数据
-    u = myresult.get('u')-int(random_key*1073741824)
-    d = myresult.get('d')-int(random_key*1073741824)
-    transfer_enable = myresult.get('transfer_enable')+int(random_key*1073741824)
-    if u >= 0:
-        sql = "update v2_user set u=%s where telegram_id=%s"
-        val = (u, update.callback_query.from_user.id)
-        V2_DB.update_one(sql, val)
-    elif d >= 0:
-        sql = "update v2_user set d=%s where telegram_id=%s"
-        val = (d, update.callback_query.from_user.id)
-        V2_DB.update_one(sql, val)
-    else:
-        sql = "update v2_user set transfer_enable=%s where telegram_id=%s"
-        val = (transfer_enable, update.callback_query.from_user.id)
-        V2_DB.update_one(sql, val)
-
+    update_flow(random_key, update.callback_query.from_user.id)
     await update.callback_query.answer(text='')
 
 

@@ -2,7 +2,7 @@
 # pylint: disable=C0116,W0613
 # -*- coding: utf-8 -*-
 
-import logging, configparser, os, re
+import logging, re
 from datetime import datetime, timedelta
 from package import check_in, command
 from package.game import slot_machine, lottery_record, red_packets
@@ -13,15 +13,10 @@ from telegram.ext import (
     CallbackQueryHandler,
     filters,
 )
+from package.conf.config import TOKEN, SLOT_MACHINE_TIME
 
 
-MODULE_REAL_DIR = os.path.dirname(os.path.realpath(__file__))
-FILENAME = os.path.splitext(os.path.basename(__file__))[0]
-CONF = configparser.ConfigParser()
-CONF.read(MODULE_REAL_DIR + '/conf/config.conf')
-TOKEN = CONF.get('Telegram', FILENAME)
 logging.basicConfig(
-    filename=MODULE_REAL_DIR + '/log/' + FILENAME + '.log',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
     level=logging.INFO
 )
@@ -53,7 +48,7 @@ def main():
     #触发下注开始任务
     application.job_queue.run_repeating(
         callback=slot_machine.bet_start, 
-        interval=600, 
+        interval=SLOT_MACHINE_TIME, 
         first=calculate_remaining_seconds(), 
         name='bet_start'
     )

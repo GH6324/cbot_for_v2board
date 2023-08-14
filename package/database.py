@@ -1,21 +1,12 @@
-import os, logging, pymysql, configparser
+import logging, pymysql
 from dbutils.pooled_db import PooledDB
 from pymysql.cursors import DictCursor
+from package.conf.config import HOST, PORT, USER, PASSWORD, DATABASE
 logger = logging.getLogger(__name__)
 
 
 class V2Database:
     def __init__(self):
-        MODULE_REAL_DIR = os.path.dirname(os.path.realpath(__file__))
-        config = configparser.ConfigParser()
-        config.read(MODULE_REAL_DIR + '/../conf/config.conf')   # 读取配置文件
-
-        host = config.get('Database', 'host')
-        port = config.get('Database', 'port')
-        user = config.get('Database', 'user')
-        pwd = config.get('Database', 'pwd')
-        db = config.get('Database', 'db')
-
         self.pool = PooledDB(
             creator=pymysql,  # 使用pymysql作为连接库
             maxconnections=8,  # 连接池允许的最大连接数
@@ -33,11 +24,11 @@ class V2Database:
             # 2 = 创建游标时，
             # 4 = 执行查询时，
             # 7 = 总是
-            host=host,
-            port=int(port),
-            user=user,
-            password=pwd,
-            database=db,
+            host=HOST,
+            port=PORT,
+            user=USER,
+            password=PASSWORD,
+            database=DATABASE,
         )
 
     def __enter__(self):
@@ -109,3 +100,30 @@ class V2Database:
 
 
 V2_DB = V2Database()
+
+
+def update_flow(flow, user_id):
+    myresult = V2_DB.select_one("select * from v2_user where telegram_id=%s", user_id)
+    u = myresult.get('u')
+    d = myresult.get('d')
+    transfer_enable = myresult.get('transfer_enable')
+    
+    remaining_flow = int(flow * 1073741824)
+    
+    if u > 0:
+        to_u = min(u, remaining_flow)
+        u -= to_u
+        remaining_flow -= to_u
+    
+    if d > 0 and remaining_flow > 0:
+        to_d = min(d, remaining_flow)
+        d -= to_d
+        remaining_flow -= to_d
+    
+    if remaining_flow > 0:
+        transfer_enable += remaining_flow
+    
+    sql = "update v2_user set u=%s, d=%s, transfer_enable=%s where telegram_id=%s"
+    val = (u, d, transfer_enable, user_id)
+    V2_DB.update_one(sql, val)
+
