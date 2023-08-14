@@ -8,7 +8,7 @@ echo -e "root权限检测通过..."
 cd /usr/local/
 mkdir cbot_for_v2board
 cd cbot_for_v2board
-curl -# -O https://github.com/caoyyds/cbot_for_v2board/releases/download/2.1.0/cbot_for_v2board.tar.gz
+curl -O https://github.com/caoyyds/cbot_for_v2board/releases/download/2.1.0/cbot_for_v2board.tar.gz
 tar -zxvf cbot_for_v2board.tar.gz
 rm -rf cbot_for_v2board.tar.gz
 chmod +x cbot_for_v2board
