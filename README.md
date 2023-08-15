@@ -17,7 +17,18 @@
   
 ## 安装
 
-- 源码安装脚本（需要安装Python3.8+环境）
+- 环境依赖
+
+  此项目需要python3.8+环境依赖，由于脚本安装python会因为不同系统差异导致各种问题，请自行手动安装python3.8+
+  
+  要求输入以下命令输出正常版本号.即可使用cbot_for_v2board安装脚本安装此项目
+
+  ```bash
+  python3
+  pip3
+  ```
+
+- cbot_for_v2board安装脚本
 
   ```bash
   bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot_code.sh)
