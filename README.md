@@ -31,7 +31,7 @@
 - cbot_for_v2board安装脚本
 
   ```bash
-  bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot_code.sh)
+  bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/install_cbot.sh)
   ```
 
 ## 更新
