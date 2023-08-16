@@ -69,7 +69,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
 
   ```bash
   help - 帮助  
-  day - 每日签到得余额  
+  day - 每日签到  
   money_pack - 发拼手气余额红包  
   flow_pack - 发拼手气流量红包  
   lottery_record - 当日开奖记录  
