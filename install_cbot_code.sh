@@ -46,6 +46,7 @@ cp cbot_for_v2board.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable cbot_for_v2board.service
 
+cd package
 cd conf
 mv config config.conf
 
