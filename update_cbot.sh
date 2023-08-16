@@ -16,18 +16,7 @@ cd "$install_dir"
 
 # 检查是否使用git部署
 if [ ! -d ".git" ]; then
-  curl -LO https://github.com/caoyyds/cbot_for_v2board/releases/download/2.1.0/cbot_for_v2board.tar.gz
-  tar -zxvf --overwrite cbot_for_v2board.tar.gz
-  rm -rf cbot_for_v2board.tar.gz
-  chmod +x cbot_for_v2board
-
-  echo "cbot_for_v2board更新成功..."
-  echo "-----------------------------------------------------"
-  echo "请确认配置文件是否要更改..."
-  echo "vi /usr/local/cbot_for_v2board/config.conf"
-  echo "完成后重启cbot_for_v2board即可..."
-  echo "systemctl restart cbot_for_v2board"
-  echo "-----------------------------------------------------"
+  echo "没有检查到git目录 请检查是否使用git部署"
   exit 1
 fi
 
