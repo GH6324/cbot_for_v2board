@@ -51,8 +51,7 @@ def main():
     application.job_queue.run_repeating(
         callback=bet.bet_start, 
         interval=GAME_TIME, 
-        #first=calculate_remaining_seconds(), 
-        first=10, 
+        first=calculate_remaining_seconds(), 
         name='bet_start'
     )
 
