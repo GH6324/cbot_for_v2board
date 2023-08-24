@@ -8,15 +8,11 @@ from package.database import V2_DB, update_flow
 from telegram.ext import ContextTypes
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
-from package.conf.config import CHECK_IN_NUMBER, CHECK_IN_TYPE, CHECK_IN_777, CHECK_IN_RRR
+from package.conf.config import config
 
 
-if CHECK_IN_NUMBER == 1:
-    dice_job_type = 'dice'
-    machine_job_type = 'dice'
-elif CHECK_IN_NUMBER == 2:
-    dice_job_type = 'dice'
-    machine_job_type = 'machine'
+CHECK_IN_RRR = config.getint('Check_in', 'rrr')
+CHECK_IN_777 = config.getint('Check_in', '777')
 
 
 async def time_interval_seconds():
@@ -30,27 +26,27 @@ async def time_interval_seconds():
 
 
 async def update_user_data(check_in_data, user_id):
-    if CHECK_IN_TYPE == 1:
+    if config.get('Check_in', 'type') == '1':
         # 更新用户余额
         sql = 'update v2_user set balance=balance+%s where telegram_id=%s'
         V2_DB.update_one(sql, (int(check_in_data), user_id))
-    elif CHECK_IN_TYPE == 2:
+    elif config.get('Check_in', 'type') == '2':
         # 更新用户流量
         update_flow(check_in_data, user_id)
 
 
 async def day(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''每日签到'''
-    if CHECK_IN_TYPE == 1:
+    if config.get('Check_in', 'type') == '1':
         dice_txt = '0.01-0.06元'
         machine_txt = f'0、{CHECK_IN_RRR/100}、{CHECK_IN_777/100}元'
-    elif CHECK_IN_TYPE == 2:
+    elif config.get('Check_in', 'type') == '2':
         dice_txt = '1-6GB 流量'
         machine_txt = f'0、{CHECK_IN_RRR}、{CHECK_IN_777}GB 流量'
 
-    if CHECK_IN_NUMBER == 1:
+    if config.get('Check_in', 'number') == '1':
         day_txt = '每天可选择进行一次签到'
-    elif CHECK_IN_NUMBER == 2:
+    elif config.get('Check_in', 'number') == '2':
         day_txt = '每天可分别进行一次普通签到和一次疯狂签到'
     
 
@@ -74,6 +70,13 @@ async def day(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def dice6(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''普通签到'''    
+    if config.get('Check_in', 'number') == '1':
+        dice_job_type = 'dice'
+        machine_job_type = 'dice'
+    elif config.get('Check_in', 'number') == '2':
+        dice_job_type = 'dice'
+        machine_job_type = 'machine'
+
     dice_job = await find_limit_time(context, update.message.from_user.id, dice_job_type)
     machine_job = await find_limit_time(context, update.message.from_user.id, machine_job_type)
     
@@ -101,9 +104,9 @@ async def dice6(update: Update, context: ContextTypes.DEFAULT_TYPE):
         #更新用户数据
         dice_value = update.message.dice.value
         await update_user_data(dice_value, update.message.from_user.id)
-        if CHECK_IN_TYPE == 1:
+        if config.get('Check_in', 'type') == '1':
             bot_return = await update.message.reply_text('✅签到成功\n🎉恭喜获得'+str(dice_value/100)+'元')
-        elif CHECK_IN_TYPE == 2:
+        elif config.get('Check_in', 'type') == '2':
             bot_return = await update.message.reply_text('✅签到成功\n🎉恭喜获得'+str(dice_value)+'GB 流量')
         #限制每天签到一次
         context.job_queue.run_once(del_limit, await time_interval_seconds(), data=update.message.from_user.id, name=str(update.message.from_user.id)+dice_job_type)
@@ -114,6 +117,13 @@ async def dice6(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def dice_slot_machine(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''疯狂签到'''
+    if config.get('Check_in', 'number') == '1':
+        dice_job_type = 'dice'
+        machine_job_type = 'dice'
+    elif config.get('Check_in', 'number') == '2':
+        dice_job_type = 'dice'
+        machine_job_type = 'machine'    
+
     dice_job = await find_limit_time(context, update.message.from_user.id, dice_job_type)
     machine_job = await find_limit_time(context, update.message.from_user.id, machine_job_type)
     
@@ -159,9 +169,9 @@ async def dice_slot_machine(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             #更新用户数据
             await update_user_data(value, update.message.from_user.id)
-            if CHECK_IN_TYPE == 1:
+            if config.get('Check_in', 'type') == '1':
                 bot_return = await update.message.reply_text('✅签到成功\n🎉恭喜获得'+str(value/100)+'元')
-            elif CHECK_IN_TYPE == 2:
+            elif config.get('Check_in', 'type') == '2':
                 bot_return = await update.message.reply_text('✅签到成功\n🎉恭喜获得'+str(value)+'GB 流量')
         #限制每天签到一次
         context.job_queue.run_once(del_limit, await time_interval_seconds(), data=update.message.from_user.id, name=str(update.message.from_user.id)+machine_job_type)
@@ -177,6 +187,13 @@ async def forwarded_dice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def check_in_keyboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''签到按钮'''
+    if config.get('Check_in', 'number') == '1':
+        dice_job_type = 'dice'
+        machine_job_type = 'dice'
+    elif config.get('Check_in', 'number') == '2':
+        dice_job_type = 'dice'
+        machine_job_type = 'machine'    
+
     day_type = update.callback_query.data.split(':')[1].split(',')[0]
     from_user_id = update.callback_query.data.split(':')[1].split(',')[1]
 
@@ -209,9 +226,9 @@ async def check_in_keyboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             dice_value = dice_return.dice.value
             await update_user_data(dice_value, from_user_id)
-            if CHECK_IN_TYPE == 1:
+            if config.get('Check_in', 'type') == '1':
                 bot_return = await update.callback_query.message.reply_text('✅签到成功\n🎉恭喜获得'+str(dice_value/100)+'元')
-            elif CHECK_IN_TYPE == 2:
+            elif config.get('Check_in', 'type') == '2':
                 bot_return = await update.callback_query.message.reply_text('✅签到成功\n🎉恭喜获得'+str(dice_value)+'GB 流量')
             #限制每天签到一次
             context.job_queue.run_once(del_limit, await time_interval_seconds(), data=from_user_id, name=str(from_user_id)+dice_job_type)
@@ -253,9 +270,9 @@ async def check_in_keyboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     context.job_queue.run_once(message_auto_del, 30, data=bot_return.chat_id, name=str(bot_return.message_id))
             else:
                 await update_user_data(value, from_user_id)
-                if CHECK_IN_TYPE == 1:
+                if config.get('Check_in', 'type') == '1':
                     bot_return = await update.callback_query.message.reply_text('✅签到成功\n🎉恭喜获得'+str(value/100)+'元')
-                elif CHECK_IN_TYPE == 2:
+                elif config.get('Check_in', 'type') == '2':
                     bot_return = await update.callback_query.message.reply_text('✅签到成功\n🎉恭喜获得'+str(value)+'GB 流量')
             #限制每天签到一次
             context.job_queue.run_once(del_limit, await time_interval_seconds(), data=from_user_id, name=str(from_user_id)+machine_job_type)

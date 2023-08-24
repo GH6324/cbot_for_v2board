@@ -1,7 +1,7 @@
 import logging, pymysql
 from dbutils.pooled_db import PooledDB
 from pymysql.cursors import DictCursor
-from package.conf.config import HOST, PORT, USER, PASSWORD, DATABASE
+from package.conf.config import config
 logger = logging.getLogger(__name__)
 
 
@@ -24,11 +24,11 @@ class V2Database:
             # 2 = 创建游标时，
             # 4 = 执行查询时，
             # 7 = 总是
-            host=HOST,
-            port=PORT,
-            user=USER,
-            password=PASSWORD,
-            database=DATABASE,
+            host=config.get('Database', 'host'),
+            port=config.getint('Database', 'port'),
+            user=config.get('Database', 'user'),
+            password=config.get('Database', 'password'),
+            database=config.get('Database', 'database'),
         )
 
     def __enter__(self):
@@ -126,4 +126,14 @@ def update_flow(flow, user_id):
     sql = "update v2_user set u=%s, d=%s, transfer_enable=%s where telegram_id=%s"
     val = (u, d, transfer_enable, user_id)
     V2_DB.update_one(sql, val)
+
+
+def is_admin(user_id):
+    sql = "select * from v2_user where telegram_id=%s and is_admin=1"
+    myresult = V2_DB.select_one(sql, user_id)
+    if myresult:
+        return True
+    else:
+        return False
+
 

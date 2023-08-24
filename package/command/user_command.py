@@ -7,8 +7,11 @@ from package.job import message_auto_del
 from package.database import V2_DB
 from telegram.ext import ContextTypes
 from telegram import Update, error, InlineKeyboardButton, InlineKeyboardMarkup
-from package.conf.config import V2BOARD_URL, GROUP_URL, V2BOARD_NAME
+from package.conf.config import config
 
+V2BOARD_URL = config.get('V2board', 'url')
+V2BOARD_NAME = config.get('V2board', 'name')
+GROUP_URL = config.get('Telegram', 'group_url')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''start命令'''
@@ -16,10 +19,24 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if update.message.chat.type == 'supergroup':
-        try:
-            await update.message.delete()
-        except error.BadRequest:
-            pass
+        keyboard = [
+            [
+                InlineKeyboardButton("🌍官方网站", url=V2BOARD_URL),
+                InlineKeyboardButton("👥官方群组", url=GROUP_URL),
+            ],
+            [
+                InlineKeyboardButton("cbot_for_v2board_v2.2.0", url='https://github.com/caoyyds/cbot_for_v2board'),
+            ],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot_return = await update.message.reply_text(
+            text=f'Hi\n欢迎使用{V2BOARD_NAME}机场bot\n\n'\
+                f'如果您没有注册过{V2BOARD_NAME}请点击下方按钮进入官方网站注册\n\n'\
+                '如果您已注册,请使用 /bind 命令绑定账号后使用此Bot',
+            reply_markup=reply_markup,
+        )
+        context.job_queue.run_once(message_auto_del, 30, data=update.message.chat_id, name=str(update.message.message_id))
+        context.job_queue.run_once(message_auto_del, 30, data=bot_return.chat_id, name=str(bot_return.message_id))
         return
     
     if not context.args:
@@ -29,7 +46,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("👥官方群组", url=GROUP_URL),
             ],
             [
-                InlineKeyboardButton("Github开源地址", url='https://github.com/caoyyds/cbot_for_v2board'),
+                InlineKeyboardButton("cbot_for_v2board_v2.2.0", url='https://github.com/caoyyds/cbot_for_v2board'),
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -42,7 +59,62 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
         
     if len(context.args) == 1:
-        keyboard = [
+        keyboard_dice = [
+            [
+                InlineKeyboardButton("大",callback_data=f'BET_CONTENT:{context.args[0]},大,'),
+                InlineKeyboardButton("小",callback_data=f'BET_CONTENT:{context.args[0]},小,'),
+                InlineKeyboardButton("单",callback_data=f'BET_CONTENT:{context.args[0]},单,'),
+                InlineKeyboardButton("双",callback_data=f'BET_CONTENT:{context.args[0]},双,'),
+            ], 
+            [
+                InlineKeyboardButton("4",callback_data=f'BET_CONTENT:{context.args[0]},4,'),
+                InlineKeyboardButton("5",callback_data=f'BET_CONTENT:{context.args[0]},5,'),
+                InlineKeyboardButton("6",callback_data=f'BET_CONTENT:{context.args[0]},6,'),
+                InlineKeyboardButton("7",callback_data=f'BET_CONTENT:{context.args[0]},7,'),
+                InlineKeyboardButton("8",callback_data=f'BET_CONTENT:{context.args[0]},8,'),
+                InlineKeyboardButton("9",callback_data=f'BET_CONTENT:{context.args[0]},9,'),
+                InlineKeyboardButton("10",callback_data=f'BET_CONTENT:{context.args[0]},10,'),
+            ],
+            [
+                InlineKeyboardButton("17",callback_data=f'BET_CONTENT:{context.args[0]},17,'),
+                InlineKeyboardButton("16",callback_data=f'BET_CONTENT:{context.args[0]},16,'),
+                InlineKeyboardButton("15",callback_data=f'BET_CONTENT:{context.args[0]},15,'),
+                InlineKeyboardButton("14",callback_data=f'BET_CONTENT:{context.args[0]},14,'),
+                InlineKeyboardButton("13",callback_data=f'BET_CONTENT:{context.args[0]},13,'),
+                InlineKeyboardButton("12",callback_data=f'BET_CONTENT:{context.args[0]},12,'),
+                InlineKeyboardButton("11",callback_data=f'BET_CONTENT:{context.args[0]},11,'),
+            ],
+            [
+                InlineKeyboardButton("特殊奖:全围💣",callback_data=f'BET_CONTENT:{context.args[0]},💣,'),
+            ],
+            [
+                InlineKeyboardButton("1️⃣1️⃣",callback_data=f'BET_CONTENT:{context.args[0]},1️⃣1️⃣,'),
+                InlineKeyboardButton("1️⃣1️⃣1️⃣",callback_data=f'BET_CONTENT:{context.args[0]},1️⃣1️⃣1️⃣,'),
+            ],
+            [
+                InlineKeyboardButton("2️⃣2️⃣",callback_data=f'BET_CONTENT:{context.args[0]},2️⃣2️⃣,'),
+                InlineKeyboardButton("2️⃣2️⃣2️⃣",callback_data=f'BET_CONTENT:{context.args[0]},2️⃣2️⃣2️⃣,'),
+            ],
+            [
+                InlineKeyboardButton("3️⃣3️⃣",callback_data=f'BET_CONTENT:{context.args[0]},3️⃣3️⃣,'),
+                InlineKeyboardButton("3️⃣3️⃣3️⃣",callback_data=f'BET_CONTENT:{context.args[0]},3️⃣3️⃣3️⃣,'),
+            ],
+            [
+                InlineKeyboardButton("4️⃣4️⃣",callback_data=f'BET_CONTENT:{context.args[0]},4️⃣4️⃣,'),
+                InlineKeyboardButton("4️⃣4️⃣4️⃣",callback_data=f'BET_CONTENT:{context.args[0]},4️⃣4️⃣4️⃣,'),
+            ], 
+            [
+                InlineKeyboardButton("5️⃣5️⃣",callback_data=f'BET_CONTENT:{context.args[0]},5️⃣5️⃣,'),
+                InlineKeyboardButton("5️⃣5️⃣5️⃣",callback_data=f'BET_CONTENT:{context.args[0]},5️⃣5️⃣5️⃣,'),
+            ], 
+            [
+                InlineKeyboardButton("6️⃣6️⃣",callback_data=f'BET_CONTENT:{context.args[0]},6️⃣6️⃣,'),
+                InlineKeyboardButton("6️⃣6️⃣6️⃣",callback_data=f'BET_CONTENT:{context.args[0]},6️⃣6️⃣6️⃣,'),
+            ]
+        ]
+        reply_markup_dice = InlineKeyboardMarkup(keyboard_dice)
+
+        keyboard_slot_machine = [
             [
                 InlineKeyboardButton("®️®️®️",callback_data=f'BET_CONTENT:{context.args[0]},®️®️®️,'),
                 InlineKeyboardButton("🍇🍇🍇",callback_data=f'BET_CONTENT:{context.args[0]},🍇🍇🍇,'),
@@ -65,9 +137,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("特殊奖:炸弹💣",callback_data=f'BET_CONTENT:{context.args[0]},💣,'),
             ], 
         ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text(text='请选择您的投注项:',reply_markup=reply_markup)
-                
+        reply_markup_slot_machine = InlineKeyboardMarkup(keyboard_slot_machine)
+
+        game_name = context.bot_data.get('game_name')
+        if game_name == 'dice':
+            await update.message.reply_text(text='请选择您的投注项:',reply_markup=reply_markup_dice)
+        elif game_name == 'slot_machine':
+            await update.message.reply_text(text='请选择您的投注项:',reply_markup=reply_markup_slot_machine)
+        
 
 async def bind(update: Update, context: ContextTypes.DEFAULT_TYPE):
     '''绑定账号'''
@@ -166,7 +243,10 @@ async def me(update: Update, context: ContextTypes.DEFAULT_TYPE):
     #邮箱账号
     email = myresult.get('email')
     #订阅到期
-    expired_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(myresult.get('expired_at')))
+    if myresult.get('expired_at'):
+        expired_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(myresult.get('expired_at')))
+    else:
+        expired_at = '长期套餐'
     #流量更新日期
     updated_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(myresult.get('updated_at')))
     #获取流量

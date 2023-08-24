@@ -25,6 +25,9 @@ echo "正在更新cbot_for_v2board..."
 git config --global --add safe.directory "$(pwd)"
 git fetch --all && git reset --hard origin/main && git pull origin main
 
+cd package/conf
+cp config config.conf
+
 echo "cbot_for_v2board更新成功..."
 echo "-----------------------------------------------------"
 echo "请确认配置文件是否要更改..."

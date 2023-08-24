@@ -2,50 +2,47 @@
 # pylint: disable=C0116,W0613
 # -*- coding: utf-8 -*-
 
-import configparser, sys, os
+import os, configparser
 
-# 文件所在路径
-if getattr(sys, 'frozen', False):
-    bundle_dir = os.path.dirname(sys.executable)
-else:
-    bundle_dir = os.path.dirname(os.path.abspath(__file__))
+class ConfigManager:
+    def __init__(self, config_file_name='config.conf'):
+        # 获取当前脚本所在目录并拼接配置文件路径
+        bundle_dir = os.path.dirname(os.path.abspath(__file__))
+        self.config_file_path = os.path.join(bundle_dir, config_file_name)
+        
+        self.config = configparser.ConfigParser()
+        self.config.read(self.config_file_path)
 
-# 构建配置文件路径
-config_path = os.path.join(bundle_dir, 'config.conf')
+    def get(self, section, option, default=None):
+        """获取配置值，如果不存在则返回默认值"""
+        if self.config.has_section(section) and self.config.has_option(section, option):
+            return self.config.get(section, option)
+        else:
+            return default
 
-print(config_path)
+    def getint(self, section, option, default=None):
+        """获取配置值，如果不存在则返回默认值"""
+        if self.config.has_section(section) and self.config.has_option(section, option):
+            return self.config.getint(section, option)
+        else:
+            return default
 
-# 读取配置文件
-conf = configparser.ConfigParser()
-conf.read(config_path)
+    def set(self, section, option, value, default=None):
+        """设置配置值，如果不存在则自动添加，可以指定默认值"""
+        if not self.config.has_section(section):
+            self.config.add_section(section)
 
-# 数据库配置
-HOST = conf.get('Database', 'host', fallback='127.0.0.1')
-PORT = int(conf.get('Database', 'port', fallback='3306'))
-USER = conf.get('Database', 'user')
-PASSWORD = conf.get('Database', 'password')
-DATABASE = conf.get('Database', 'database')
+        # 如果没有提供值，则使用默认值
+        if value is None:
+            value = default
 
-# telegram配置
-TOKEN = conf.get('Telegram', 'token')
-GROUP_URL = conf.get('Telegram','group_url')
-GROUP_USERNAME = conf.get('Telegram','group_username')
+        self.config.set(section, option, value)
 
-# 机场配置
-V2BOARD_NAME = conf.get('V2board','name')
-V2BOARD_URL = conf.get('V2board','url')
+    def save(self):
+        """保存配置到文件"""
+        with open(self.config_file_path, 'w') as configfile:
+            self.config.write(configfile)
 
-# 签到配置
-CHECK_IN_NUMBER = int(conf.get('Check_in', 'number', fallback='2'))
-CHECK_IN_TYPE = int(conf.get('Check_in', 'type', fallback='1'))
-CHECK_IN_777 = int(conf.get('Check_in', '777', fallback='100'))
-CHECK_IN_RRR = int(conf.get('Check_in', 'rrr', fallback='50'))
 
-# 老虎机配置
-SLOT_MACHINE_TIME = int(conf.get('Machine', 'time', fallback='600'))
-SLOT_MACHINE_ONE = int(conf.get('Machine', 'one', fallback='2'))
-SLOT_MACHINE_TWO = int(conf.get('Machine', 'two', fallback='6'))
-SLOT_MACHINE_THREE = int(conf.get('Machine', 'three', fallback='50'))
-SLOT_MACHINE_BOMB = int(conf.get('Machine', 'bomb', fallback='15'))
-SLOT_MACHINE_HELP = conf.get('Machine', 'help', fallback='https://telegra.ph/CAO-SLOT-MACHINE-03-31')
+config = ConfigManager()
 

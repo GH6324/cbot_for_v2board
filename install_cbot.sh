@@ -31,7 +31,7 @@ if [[ x"${release}" == x"centos" ]]; then
     yum install wget curl tar crontabs git -y
 else
     apt update -y
-    apt install wget curl tar cron git -y
+    apt install wget curl tar cron git python3 python3-pip -y
 fi
 echo -e "依赖安装完成..."
 
@@ -46,9 +46,8 @@ cp cbot_for_v2board.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable cbot_for_v2board.service
 
-cd package
-cd conf
-mv config config.conf
+cd package/conf
+cp config config.conf
 
 echo "安装完成..."
 echo "------------------------------------------"
