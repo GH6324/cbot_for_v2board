@@ -281,6 +281,12 @@ async def bet_up(update: Update, context: ContextTypes.DEFAULT_TYPE):
     first_text = f'{game_icon}投注赚流量\n第<code>{date}</code>期\n剩余开奖时间{limit_time}秒\n\n'
     context.bot_data['bet_message'] = first_text+old_message
     
+    game_name = context.bot_data['game_name']
+    if game_name == 'slot_machine':
+        game_help = SLOT_MACHINE_HELP
+    elif game_name == 'dice':
+        game_help = DICE_HELP
+
     #更改群组消息
     keyboard = [
             [
@@ -288,7 +294,7 @@ async def bet_up(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("🔄开奖时间",callback_data=f'BET_UP:{callback_query_date}'),
             ], 
             [
-                InlineKeyboardButton("📝玩法说明文档",url=SLOT_MACHINE_HELP),
+                InlineKeyboardButton("📝玩法说明文档",url=game_help),
             ], 
         ]
     reply_markup = InlineKeyboardMarkup(keyboard)
