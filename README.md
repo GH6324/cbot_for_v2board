@@ -41,6 +41,7 @@
 
   # 授权远程访问数据库
   GRANT ALL PRIVILEGES ON 数据库名.* TO 'root'@'%' IDENTIFIED BY '数据库的root用户密码';
+  # 不要直接复制粘贴 不要直接复制粘贴 不要直接复制粘贴
   
   # 刷新权限
   FLUSH PRIVILEGES;
