@@ -24,8 +24,8 @@
   要求输入以下命令输出正常版本号.即可使用cbot_for_v2board安装脚本安装此项目
 
   ```bash
-  python3
-  pip3
+  python3 -V
+  pip3 -V
   ```
 
   推荐使用debian11或ubuntu22.04及以上版本系统进行安装，安装脚本会通过apt包管理器安装python3，如果使用其他系统请自行安装python3.8+，并确保pip3可用
