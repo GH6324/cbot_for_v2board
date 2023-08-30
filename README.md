@@ -5,7 +5,7 @@
 
 ## 公告🪧
 
-  由于已经有人重构代码并且在复刻此项目了，此项目将不再进行维护，复刻项目地址 https://github.com/v2boardbot/v2boardbot
+  由于已经有人重构代码并且在复刻此项目了，此项目将不再进行维护（停止维护前对应的v2b版本为1.74），复刻项目地址 https://github.com/v2boardbot/v2boardbot
 
 ## 免责声明
 
