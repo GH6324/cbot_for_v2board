@@ -3,6 +3,14 @@
 小C-TelegramBot  
 为[v2board](https://github.com/v2board/v2board)开发的群组小游戏及实用功能机器人
 
+## 公告🪧
+
+  由于已经有人重构代码并且在复刻此项目了，此项目将不再进行维护，复刻项目地址 https://github.com/v2boardbot/v2boardbot
+
+## 免责声明
+
+  此项目仅供学习交流，切勿用于商业用途，请遵循开源协议
+
 ## 介绍
 
 - 每日签到
@@ -126,16 +134,6 @@ bash <(curl -Ls https://raw.githubusercontent.com/caoyyds/cbot_for_v2board/main/
   首次运行或重启机器人后，群组内的投注消息会在下一个整10分钟发送（例如：10:34开启机器人，会在10:40发送第一条投注消息）
 
   如有运行机器人后没有反应，可以使用`journalctl -u cbot_for_v2board.service`查看日志，根据日志进行排查  
-
-## 演示群组&Bot
-
-[小C-Airport](https://t.me/cao_airport_group)  
-[小C-Airport-Bot](https://t.me/cao_airport_bot)
-
-## 问题反馈&更新公告
-
-[小C-机器人交流群](https://t.me/cao_bot_group)  
-[小C-机器人更新公告](https://t.me/cao_bot_channel)
 
 ## 鸣谢
 
